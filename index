@@ -1,0 +1,78 @@
+<%-- 
+    Document   : final
+    Created on : 7 Jun, 2022, 4:31:03 PM
+    Author     : JUGAL
+--%>
+
+<%@page import="java.sql.*"%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>JSP Page</title>
+    </head>
+    <body>
+        <form action="final.jsp" method="post">
+        <select name="state" id="state" onchange="this.form.submit();">
+        
+         <%
+            
+            
+           
+            try{
+                Class.forName("org.postgresql.Driver");
+            Connection con=DriverManager.getConnection("jdbc:postgresql://localhost:5432/E_FIVE","postgres","1234");
+            
+            Statement st=con.createStatement();
+            
+            ResultSet rs=st.executeQuery("select * from state_master");
+            
+               while(rs.next()){%>
+               <option value="<%rs.getInt(1);%>"
+                       <%
+                     if(request.getParameter("state")!=null)
+                     {
+                         if(rs.getInt("state_id")==Integer.parseInt(request.getParameter("state"))){
+                             
+                             out.print("selected");
+                         
+                         }
+                     }
+                 %>
+                       ><%out.print(rs.getString(2));%></option>
+               <% 
+               }
+           
+        %>
+        </select>
+        
+        
+        
+        <select>
+            <%
+                PreparedStatement psmt=con.prepareStatement("select * from city_master where state_id=?");
+                psmt.setString(1, request.getParameter("state"));
+                
+              ResultSet rs1=psmt.executeQuery();
+              
+              while (rs1.next()) { 
+                  
+                  %>
+                 <option value="<%rs1.getInt(1);%>"><%out.print(rs1.getString(2));%></option>
+                 
+                 
+                 
+                   <%
+                      
+                  }
+  
+            %>
+            
+        </select>
+        <%}catch(Exception e){out.print(e);}%>
+        </form>
+        
+        
+    </body>
+</html>
